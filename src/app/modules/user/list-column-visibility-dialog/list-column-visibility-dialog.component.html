@@ -1,0 +1,76 @@
+<h2 mat-dialog-title>
+  Configure abaixo quais colunas você quer exibir ou esconder.
+</h2>
+
+<div mat-dialog-content>
+  <p>
+    Fique tranquilo, essa configuração só aparecerá para você e poderá ser
+    restaurada a qualquer momento.
+  </p>
+  <div class="columns">
+    <div>
+      <h2>Colunas visíveis</h2>
+      <div
+        class="list"
+        cdkDropList
+        [cdkDropListData]="visible"
+        #visibleColumns="cdkDropList"
+        (cdkDropListDropped)="drop($event)"
+        [cdkDropListConnectedTo]="hiddenColumns"
+      >
+        <ng-container *ngIf="canDrag; else notDraggable">
+          <div cdkDrag class="list-item" *ngFor="let item of visible">
+            <span>{{ data.columnMap[item].description }}</span>
+            <button mat-icon-button (click)="remove(item)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </ng-container>
+        <ng-template #notDraggable>
+          <div
+            class="list-item"
+            *ngFor="let item of visible"
+            [style.cursor]="'not-allowed'"
+          >
+            <span>{{ data.columnMap[item].description }}</span>
+            <button mat-icon-button disabled [style.cursor]="'not-allowed'">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div>
+      <h2>Colunas escondidas</h2>
+      <div
+        [ngStyle]="!hidden.length ? { border: 'transparent' } : {}"
+        cdkDropList
+        class="list"
+        [cdkDropListData]="hidden"
+        #hiddenColumns="cdkDropList"
+        (cdkDropListDropped)="drop($event)"
+        [cdkDropListConnectedTo]="visibleColumns"
+      >
+        <div cdkDrag class="list-item" *ngFor="let item of hidden">
+          <span>{{ data.columnMap[item].description }}</span>
+          <button mat-icon-button (click)="add(item)">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+        <ng-container *ngIf="!hidden.length">
+          Nenhuma coluna escondida
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div mat-dialog-actions [style.justify-content]="'end'">
+  <button mat-stroked-button (click)="restoreDefaultColumns()">
+    Restaurar
+  </button>
+  <button color="primary" mat-stroked-button [mat-dialog-close]="visible">
+    Aplicar
+  </button>
+</div>
